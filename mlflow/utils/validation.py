@@ -2,6 +2,7 @@
 Utilities for validating user inputs such as metric names and parameter names.
 """
 import numbers
+import warnings
 import posixpath
 import re
 
@@ -172,7 +173,14 @@ def _validate_length_limit(entity_name, limit, value):
             error_code=INVALID_PARAMETER_VALUE,
         )
 
-
+def _validate_and_fix_length_limit(entity_name, limit, value):
+    if len(value) > limit:
+        notice =
+            "%s '%s' had length %s, which exceeded length limit of %s"
+            % (entity_name, value[:250], len(value), limit)
+        warnings.warn(notice, category=UserWarning)
+    return value[:5000]
+        
 def _validate_run_id(run_id):
     """Check that `run_id` is a valid run ID and raise an exception if it isn't."""
     if _RUN_ID_REGEX.match(run_id) is None:
